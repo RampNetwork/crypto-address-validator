@@ -2,7 +2,8 @@
 ignorePatterns:
   - '*.d.ts'
   - 'dist'
-  - "rollup.config.ts"
+  - 'rollup.config.ts'
+  - 'rollup.config.ts'
 
 env:
   browser: true
