@@ -15,7 +15,6 @@ export const numberToHex = (number: number): string => {
   return hex;
 };
 
-// TODO refactor
 export const toHex = (arrayOfNumbers: number[] | Buffer) => {
   let hex = "";
 
