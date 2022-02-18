@@ -4,6 +4,7 @@ import { NetTypes } from "./types/net.types";
 import {
   AddressFormats,
   TAddress,
+  TAddressFormats,
   TBaseValidator,
   TIsValidAddress,
   TNetType,
@@ -21,28 +22,13 @@ const isAValidAddress: TIsValidAddress = (address) => {
   }
 };
 
-// TODO refactor
 const isValidAddressFormat = (addressFormat: TAddress): boolean => {
-  let validAddressFormat = false;
-  switch (addressFormat) {
-    case "all":
-      validAddressFormat = true;
-      break;
-    case BCH.Format.Legacy:
-      validAddressFormat = true;
-      break;
-    case BCH.Format.Bitpay:
-      validAddressFormat = true;
-      break;
-    case BCH.Format.Cashaddr:
-      validAddressFormat = true;
-      break;
-    case BCH.Format.Slpaddr:
-      validAddressFormat = true;
-      break;
-  }
-
-  return validAddressFormat;
+  return [
+    "all",
+    BCH.Format.Legacy,
+    BCH.Format.Cashaddr,
+    BCH.Format.Slpaddr,
+  ].includes(addressFormat as BCH.Format);
 };
 
 const isValidNetworkType = (address: TAddress, networkType: TNetType) => {
@@ -58,62 +44,47 @@ const isValidNetworkType = (address: TAddress, networkType: TNetType) => {
   return true;
 };
 
+const validateAddressByFormat = (addressFormat: string, address: string) => {
+  switch (addressFormat) {
+    case "all":
+      return isAValidAddress(address);
+    case BCH.Format.Legacy:
+      return BCH.isLegacyAddress(address);
+    case BCH.Format.Bitpay:
+      BCH.isBitpayAddress(address);
+    case BCH.Format.Cashaddr:
+      return BCH.isCashAddress(address);
+    case BCH.Format.Slpaddr:
+      return BCH.isSlpAddress(address);
+  }
+};
+
+const normalizeAddressFormat = (addressFormat: string) =>
+  addressFormat.toLowerCase().trim();
+
 const isValidBitcoinCashAddress: TIsValidAddress = (
   address,
   _currency,
   networkType,
   addressFormats
-) => {
-  let isValid = false;
-
+): boolean => {
   for (let i = 0; i < addressFormats.length; i++) {
-    const addressFormat = addressFormats[i].toLowerCase().trim();
+    const addressFormat = normalizeAddressFormat(addressFormats[i]);
     if (!isValidAddressFormat(addressFormat)) {
       continue;
     }
 
     try {
-      switch (addressFormat) {
-        case "all":
-          if (isAValidAddress(address)) {
-            isValid = true;
-          }
-          break;
-        case BCH.Format.Legacy:
-          if (BCH.isLegacyAddress(address)) {
-            isValid = true;
-          }
-          break;
-        case BCH.Format.Bitpay:
-          if (BCH.isBitpayAddress(address)) {
-            isValid = true;
-          }
-          break;
-        case BCH.Format.Cashaddr:
-          if (BCH.isCashAddress(address)) {
-            isValid = true;
-          }
-          break;
-        case BCH.Format.Slpaddr:
-          if (BCH.isSlpAddress(address)) {
-            isValid = true;
-          }
-          break;
-      }
-    } catch (error) {
+      return (
+        validateAddressByFormat(addressFormat, address) &&
+        isValidNetworkType(address, networkType)
+      );
+    } catch {
       continue;
     }
-
-    if (isValid) {
-      break;
-    }
   }
 
-  if (!isValid) {
-    return false;
-  }
-
-  return isValidNetworkType(address, networkType);
+  return false;
 };
 
 export const bitcoincashValidator: TBaseValidator = {
