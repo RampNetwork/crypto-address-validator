@@ -1,4 +1,4 @@
-# @@ramp-network/crypto-address-validator
+# @ramp-network/crypto-address-validator
 Simple wallet address validator for multiple cryptocurrencies working in Node.js and the browser.
 
 Forked from [Swyftx/crypto-address-validator](https://github.com/Swyftx/crypto-address-validator) which was forked from [ognus/wallet-address-validator](https://github.com/ognus/wallet-address-validator) which was forked from [ryanralph/altcoin-address](https://github.com/ryanralph/altcoin-address).
@@ -12,7 +12,7 @@ yarn add @ramp-network/crypto-address-validator
 
 #### NPM
 ```bash
-npm install @@ramp-network/crypto-address-validator
+npm install @ramp-network/crypto-address-validator
 ```
 
 ## API
